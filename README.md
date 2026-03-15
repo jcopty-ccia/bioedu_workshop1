@@ -35,11 +35,49 @@ Recommended options:
 
 2. **PuTTY**  
    Easier to get started for SSH access only, but it does not give you a full Linux environment on your own machine.
+   Download from [PuTTY ifficial site](https://www.putty.org/index.html) and follow instructions 
 
 Rule of thumb:
 
 - use **WSL** if you want to practice Linux properly
 - use **PuTTY** if you only need a simple SSH client quickly
+
+### Windows setup for SSH into NCI
+
+NCI's documented Gadi login host is:
+
+```text
+gadi.nci.org.au
+```
+
+If you are using a terminal with OpenSSH, the basic login command is:
+
+```bash
+ssh your_nci_username@gadi.nci.org.au
+```
+
+Example:
+
+```bash
+ssh abc123@gadi.nci.org.au
+```
+
+If you are using **PuTTY** on Windows:
+
+1. Install PuTTY from the official download page above.
+2. Open PuTTY.
+3. In the **Host Name (or IP address)** field, enter `gadi.nci.org.au`.
+4. Make sure the connection type is `SSH`.
+5. Leave the port as `22`
+6. Click **Open**.
+7. When prompted for `login as:`, enter your NCI username, for example `abc123`.
+8. Enter your password.
+
+Notes:
+
+- the first time you connect, PuTTY may ask you to trust the host key
+- when typing your password, nothing appears on screen; this is normal
+- after login, you are on a **login node**, not a worker node
 
 ## 3. Common Command Line Commands
 
