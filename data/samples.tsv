@@ -1,0 +1,9 @@
+sample_id	project	status	runtime_minutes	owner
+sample01	koala	COMPLETE	12	alex
+sample02	koala	FAILED	4	sam
+sample03	wombat	RUNNING	21	riley
+sample04	platypus	COMPLETE	8	jo
+sample05	koala	QUEUED	0	alex
+sample06	wombat	COMPLETE	15	morgan
+sample07	echidna	FAILED	2	sam
+sample08	platypus	COMPLETE	19	jo

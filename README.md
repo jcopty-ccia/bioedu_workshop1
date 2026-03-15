@@ -1,56 +1,53 @@
-# Bio-Edu Command Line and HPC Workshop
+# Command Line and HPC Workshop
 
-This workshop is a practical introduction to:
+This repository is a beginner-friendly workshop for introducing:
 
-- using the command line
-- understanding basic Linux shell workflows
-- running work on HPC systems
-- submitting jobs with PBS at NCI
+- the command line
+- basic Linux shell skills
+- simple shell scripting
+- HPC concepts
+- PBS job submission on NCI
 
-## 1. What Is the Command Line?
+The workshop is designed so participants can do most of the work **after logging in to NCI**, which makes it practical for a mixed audience using Windows, macOS, and Linux.
 
-The command line interface (CLI) lets you interact with a computer by typing commands into a terminal instead of clicking through a graphical interface.
+## Workshop goals
 
-Why it matters:
+By the end of the session, participants should be able to:
 
-- it is fast for repetitive tasks
-- it is the standard way to work on Linux servers and HPC systems
-- it makes automation possible through scripts
+- connect to NCI
+- navigate files and folders from the command line
+- use command help and man pages
+- inspect and edit simple shell scripts
+- run a small script on the login node
+- understand login nodes vs worker nodes
+- submit a simple PBS job with `qsub`
 
-## 2. Windows vs Unix/Linux
-
-Most HPC systems use Linux, so a Linux-like shell environment is the best preparation.
+## Recommended setup
 
 ### macOS and Linux
 
-- already include a Unix shell
-- use `Terminal`, `iTerm2`, or similar terminal applications
+Use your normal terminal application, for example:
+
+- `Terminal`
+- `iTerm2`
 
 ### Windows
 
-Recommended options:
+For a workshop, **PuTTY** is the simplest option.
 
-1. **WSL (Windows Subsystem for Linux)**  
-   Best for compatibility with Linux commands, shell scripts, and HPC workflows.
+- [PuTTY download page](https://www.putty.org/index.html)
 
-2. **PuTTY**  
-   Easier to get started for SSH access only, but it does not give you a full Linux environment on your own machine.
-   Download from [PuTTY ifficial site](https://www.putty.org/index.html) and follow instructions 
+`WSL` is also a good option long term, but it can take more time to set up and may require permissions that workshop participants do not have.
 
-Rule of thumb:
+## Logging in to NCI
 
-- use **WSL** if you want to practice Linux properly
-- use **PuTTY** if you only need a simple SSH client quickly
-
-### Windows setup for SSH into NCI
-
-NCI's documented Gadi login host is:
+NCI's Gadi login host is:
 
 ```text
 gadi.nci.org.au
 ```
 
-If you are using a terminal with OpenSSH, the basic login command is:
+### Using OpenSSH
 
 ```bash
 ssh your_nci_username@gadi.nci.org.au
@@ -62,277 +59,375 @@ Example:
 ssh abc123@gadi.nci.org.au
 ```
 
-If you are using **PuTTY** on Windows:
+### Using PuTTY
 
-1. Install PuTTY from the official download page above.
-2. Open PuTTY.
-3. In the **Host Name (or IP address)** field, enter `gadi.nci.org.au`.
-4. Make sure the connection type is `SSH`.
-5. Leave the port as `22`
-6. Click **Open**.
-7. When prompted for `login as:`, enter your NCI username, for example `abc123`.
-8. Enter your password.
+1. Open PuTTY.
+2. In **Host Name (or IP address)** enter `gadi.nci.org.au`.
+3. Make sure the connection type is `SSH`.
+4. Leave the port as `22`.
+5. Click **Open**.
+6. When prompted for `login as:`, enter your NCI username.
+7. Enter your password.
 
 Notes:
 
-- the first time you connect, PuTTY may ask you to trust the host key
-- when typing your password, nothing appears on screen; this is normal
-- after login, you are on a **login node**, not a worker node
+- the first login may prompt you to trust the host key
+- when you type your password, nothing appears on the screen; this is normal
+- after login, you are on a **login node**
 
-## 3. Common Command Line Commands
+## Git clone the workshop repo
+
+Once logged in to NCI, clone the repository:
+
+```bash
+git clone <your-repo-url>
+cd workshop
+```
+
+If Git is not available or you do not want to teach Git live, participants can also work from a pre-provided folder.
+
+## What is in this repository?
+
+```text
+README.md
+data/
+  samples.tsv
+scripts/
+  hello.sh
+  if_example.sh
+  while_example.sh
+pbs/
+  hello.pbs
+  report_samples.pbs
+```
+
+## Quick command line cheat sheet
 
 | Command | Purpose | Example |
 | --- | --- | --- |
-| `pwd` | show current directory | `pwd` |
+| `pwd` | print current directory | `pwd` |
 | `ls` | list files | `ls -lah` |
-| `cd` | change directory | `cd data` |
-| `mkdir` | create directory | `mkdir results` |
-| `cp` | copy files | `cp input.txt backup.txt` |
-| `mv` | move or rename files | `mv old.txt new.txt` |
-| `rm` | remove files | `rm notes.txt` |
-| `cat` | print file contents | `cat script.sh` |
-| `less` | view long files | `less README.md` |
-| `head` | show first lines | `head data.csv` |
-| `tail` | show last lines | `tail log.txt` |
-| `echo` | print text | `echo "hello"` |
-| `wc` | count lines/words/chars | `wc -l file.txt` |
-| `find` | locate files | `find . -name "*.txt"` |
-| `ssh` | connect to remote machine | `ssh username@host` |
-| `scp` | copy files over SSH | `scp file.txt username@host:/path/` |
+| `cd` | change directory | `cd scripts` |
+| `mkdir` | create a folder | `mkdir practice` |
+| `mv` | move or rename | `mv old.txt new.txt` |
+| `cp` | copy a file | `cp a.txt b.txt` |
+| `cat` | print a file | `cat README.md` |
+| `less` | view a file page by page | `less README.md` |
+| `head` | first lines of a file | `head data/samples.tsv` |
+| `tail` | last lines of a file | `tail data/samples.tsv` |
+| `grep` | search text | `grep COMPLETE data/samples.tsv` |
+| `awk` | work with columns | `awk 'NR > 1 {print $2}' data/samples.tsv` |
+| `man` | open manual page | `man ls` |
 
-## 4. CLI Cheat Sheet
+## Man pages and help
 
-### Navigation
-
-```bash
-pwd
-ls
-ls -lah
-cd folder_name
-cd ..
-cd ~
-```
-
-### Files and directories
-
-```bash
-mkdir new_folder
-cp file1.txt file2.txt
-mv oldname.txt newname.txt
-rm file.txt
-rm -r folder_name
-```
-
-### Viewing files
-
-```bash
-cat file.txt
-less file.txt
-head file.txt
-tail file.txt
-```
-
-### Remote access
-
-```bash
-ssh username@host
-scp local.txt username@host:/remote/path/
-```
-
-## 5. Man Pages
-
-Manual pages are built-in documentation for many commands.
-
-Examples:
+Useful examples:
 
 ```bash
 man ls
 man grep
 man ssh
-```
-
-Useful pattern:
-
-```bash
-command --help
-```
-
-Examples:
-
-```bash
 grep --help
-ssh --help
 qsub --help
 ```
 
-## 6. Powerful Shell Tools
+## Brief shell scripting concepts
 
-These tools are worth learning early because they scale well from simple use to real data work.
+A shell script is a text file containing commands that run in order.
 
-### `grep`
+This workshop introduces:
 
-Search text for patterns:
+- a simple script
+- an `if` statement
+- a `while` loop
 
-```bash
-grep "ERROR" logfile.txt
-grep -i "sample" names.txt
-grep -r "PBS" .
-```
-
-### `awk`
-
-Extract or process columns of text:
-
-```bash
-awk '{print $1}' file.txt
-awk -F, '{print $2}' data.csv
-```
-
-### `while`
-
-Loop through input:
-
-```bash
-while read line
-do
-  echo "$line"
-done < names.txt
-```
-
-### GNU `parallel`
-
-Run multiple tasks at once:
-
-```bash
-parallel echo {} ::: sample1 sample2 sample3
-```
-
-This is very useful when you have many similar jobs to run.
-
-## 7. Very Brief Intro to Bash Scripts
-
-A shell script is a text file containing commands that run in sequence.
-
-Example script:
-
-```bash
-#!/bin/bash
-echo "Starting job"
-pwd
-date
-echo "Finished"
-```
-
-Save it as `hello.sh`.
-
-## 8. How to Run a Script
+### Running a script
 
 Option 1:
 
 ```bash
-bash hello.sh
+bash scripts/hello.sh
 ```
 
 Option 2:
 
 ```bash
-chmod +x hello.sh
-./hello.sh
+chmod +x scripts/hello.sh
+./scripts/hello.sh
 ```
 
-The first line, `#!/bin/bash`, is called a **shebang**. It tells the system which interpreter to use.
+## HPC concepts
 
-## 9. What Is HPC?
+### What is HPC?
 
 HPC stands for **High Performance Computing**.
 
-It means using powerful shared systems with many CPUs, large memory, and job schedulers to run workloads that are too big, too slow, or too numerous for a laptop.
+It refers to using shared computing systems with many CPUs, large memory, and job schedulers to run workloads larger than you would normally run on a laptop.
 
-Typical HPC use cases:
+### Login nodes vs worker nodes
 
-- large simulations
-- bioinformatics pipelines
-- climate and earth system modelling
-- machine learning at scale
-- data analysis on large datasets
-
-## 10. HPC Systems: NCI, Pawsey, and Katana
-
-Examples of Australian HPC systems:
-
-- **NCI**: National Computational Infrastructure
-- **Pawsey**: Pawsey Supercomputing Research Centre
-- **Katana**: UNSW research computing cluster
-
-The exact commands and policies vary, but the core ideas are similar:
-
-- log in remotely
-- prepare files and scripts
-- request resources through a scheduler
-- submit jobs to queues
-- collect outputs
-
-## 11. Login Nodes and Worker Nodes
-
-### Login nodes
-
-Used for:
+**Login nodes** are for:
 
 - logging in
 - editing files
 - moving data
 - preparing and submitting jobs
 
-Do **not** use login nodes for large or long-running compute tasks.
-
-### Worker nodes
-
-Used for:
+**Worker nodes** are for:
 
 - running compute jobs
-- using requested CPUs and memory
-- executing scheduled workloads
+- using CPUs and memory requested through the scheduler
+- batch processing
 
-Your work usually runs on worker nodes only after being submitted through the scheduler.
+Do not run heavy compute directly on the login node.
 
-## 12. Queues and Limits
+### Queues and limits
 
-HPC systems manage jobs through queues.
+Schedulers use queues to manage:
 
-Queues help control:
-
-- job priority
-- walltime limits
-- CPU and memory usage
+- walltime
+- CPUs
+- memory
+- storage
 - fair sharing between users and projects
 
-Typical limits include:
+If you request too many resources, your job may wait longer. If you request too few, your job may fail.
 
-- number of CPUs
-- memory
-- walltime
-- storage quotas
-- maximum jobs per user or project
+### NCI, PBS, and other HPC systems
 
-Important idea:
+Examples of Australian HPC systems:
 
-- if you ask for too many resources, your job may wait longer
-- if you ask for too little, your job may fail
+- **NCI**
+- **Pawsey**
+- **Katana (UNSW)**
 
-## 13. PBS at NCI
+The ideas are similar across systems even if commands and policies differ.
 
-PBS stands for **Portable Batch System**. At NCI, it is used to submit and manage jobs.
+At NCI, PBS is used to submit and manage jobs.
 
 Common PBS commands:
 
 | Command | Purpose |
 | --- | --- |
 | `qsub job.pbs` | submit a job |
-| `qstat` | check job status |
-| `qstat -u $USER` | list your jobs |
+| `qstat` | check jobs |
+| `qstat -u $USER` | check your jobs |
 | `qdel JOBID` | cancel a job |
 
-## 14. Example PBS Job Script
+## Hands-on exercises
+
+These exercises assume participants are logged into NCI and are working inside this repository.
+
+### Task 1: Navigate and manage folders
+
+Goal: get comfortable moving around the filesystem.
+
+Try:
+
+```bash
+pwd
+ls
+mkdir practice
+cd practice
+mkdir task1
+mv task1 renamed_task1
+ls
+cd ..
+```
+
+Suggested discussion:
+
+- What does `pwd` show?
+- What changed after `cd`?
+- What is the difference between creating and renaming a folder?
+
+### Task 2: Explore commands and options
+
+Goal: learn how to discover command behaviour.
+
+Try:
+
+```bash
+pwd
+ls
+ls -l
+ls -la
+man ls
+man pwd
+head data/samples.tsv
+tail data/samples.tsv
+```
+
+Suggested challenges:
+
+- Find out what `-l` means.
+- Find out what `-a` means.
+- Compare `cat`, `less`, `head`, and `tail`.
+
+### Task 3: Search and inspect text with `grep` and `awk`
+
+Goal: use a small data file to practice searching and working with columns.
+
+The file is:
+
+```text
+data/samples.tsv
+```
+
+Look at it first:
+
+```bash
+cat data/samples.tsv
+```
+
+Try these commands:
+
+```bash
+grep COMPLETE data/samples.tsv
+grep koala data/samples.tsv
+grep FAILED data/samples.tsv
+awk 'NR > 1 {print $2}' data/samples.tsv
+awk 'NR > 1 {print $1, $3}' data/samples.tsv
+```
+
+Suggested mini tasks:
+
+- find all samples with status `COMPLETE`
+- find all lines for project `koala`
+- print only the sample ID column
+- print the sample ID and status columns
+
+Extension:
+
+```bash
+awk 'NR > 1 {print $2}' data/samples.tsv | sort | uniq
+```
+
+Ask participants:
+
+- Which project names appear in the file?
+- Which samples failed?
+
+### Task 4: Run a shell script
+
+Goal: understand that a script is a sequence of commands.
+
+Inspect the script:
+
+```bash
+cat scripts/hello.sh
+```
+
+Run it:
+
+```bash
+bash scripts/hello.sh
+```
+
+Then discuss:
+
+- What did the script print?
+- Which command showed the working directory?
+- Which command showed the machine name?
+
+### Task 5: Intro to `if` statements
+
+Goal: show how scripts can make decisions.
+
+Inspect:
+
+```bash
+cat scripts/if_example.sh
+```
+
+Run:
+
+```bash
+bash scripts/if_example.sh
+```
+
+Prompt:
+
+- What condition is being tested?
+- What happens if the file exists?
+- What would happen if the file name were wrong?
+
+### Task 6: Intro to `while` loops
+
+Goal: show repetition in shell scripts.
+
+Inspect:
+
+```bash
+cat scripts/while_example.sh
+```
+
+Run:
+
+```bash
+bash scripts/while_example.sh
+```
+
+Prompt:
+
+- How many times does the loop run?
+- What happens in the second part of the script?
+- Where is the input data coming from?
+
+### Task 7: Submit a PBS job to NCI
+
+Goal: move from running a script interactively to submitting it through the scheduler.
+
+Inspect the PBS script:
+
+```bash
+cat pbs/hello.pbs
+```
+
+Submit it:
+
+```bash
+qsub pbs/hello.pbs
+```
+
+Check its status:
+
+```bash
+qstat -u $USER
+```
+
+Suggested discussion:
+
+- What do the `#PBS` lines mean?
+- Why submit with `qsub` instead of running directly?
+- What is the difference between the login node and the worker node?
+
+### Task 8: Submit a second PBS job that uses `grep` and `awk`
+
+Goal: show that batch jobs can run normal shell commands too.
+
+Inspect:
+
+```bash
+cat pbs/report_samples.pbs
+```
+
+Submit:
+
+```bash
+qsub pbs/report_samples.pbs
+```
+
+Then check:
+
+```bash
+qstat -u $USER
+ls
+```
+
+Look for the output files and inspect them with `cat` or `less`.
+
+## Example PBS script
 
 ```bash
 #!/bin/bash
@@ -342,68 +437,43 @@ Common PBS commands:
 #PBS -l ncpus=1
 #PBS -l mem=1GB
 #PBS -l jobfs=1GB
-#PBS -l storage=gdata/your_project_code
-#PBS -N hello_job
 #PBS -l wd
+#PBS -N hello_workshop
 
-echo "Hello from NCI"
-hostname
-date
+bash scripts/hello.sh
 ```
 
-Save this as `hello.pbs`.
+Update `your_project_code` before using the PBS scripts.
 
-## 15. Submit a Hello World Job
+## Suggested delivery flow
 
-Submit:
+One possible workshop sequence:
 
-```bash
-qsub hello.pbs
-```
+1. log in to NCI
+2. clone the repo
+3. explore files and folders
+4. use `man`, `ls`, `head`, and `tail`
+5. search the sample text file with `grep` and `awk`
+6. run a shell script
+7. inspect a simple `if` statement
+8. inspect a simple `while` loop
+9. submit a PBS job
+10. inspect output files
 
-Check status:
+## Teaching notes
 
-```bash
-qstat -u $USER
-```
+- use PuTTY as the default Windows path for a beginner workshop
+- keep work on the login node lightweight
+- use PBS submission to move actual jobs onto worker nodes
+- do not depend on participants having their own scripts
+- use the provided files so everyone starts from the same point
 
-Possible states:
+## Optional extension ideas
 
-- `Q` = queued
-- `R` = running
-- job disappears from `qstat` when it has finished
+If time permits, participants can:
 
-Output is usually written to files in your working directory.
-
-## 16. Suggested Live Demo Flow
-
-If you want to teach this as a short workshop, a simple sequence is:
-
-1. open a terminal
-2. navigate directories with `pwd`, `ls`, and `cd`
-3. create and inspect files
-4. show `man ls` and `grep --help`
-5. run a small shell script
-6. explain login nodes vs worker nodes
-7. show a PBS script
-8. submit a hello world job with `qsub`
-9. monitor it with `qstat`
-
-## 17. Key Takeaways
-
-- the command line is essential for Linux servers and HPC
-- Linux skills transfer well across systems
-- scripts save time and improve reproducibility
-- HPC systems use schedulers, so jobs are submitted rather than run directly
-- NCI uses PBS to manage compute jobs
-
----
-
-## Optional Practice Exercises
-
-1. Create a directory called `workshop` and move into it.
-2. Create a file called `notes.txt` and add a few lines of text.
-3. Use `cat`, `head`, and `tail` to inspect the file.
-4. Use `grep` to search for a word in the file.
-5. Write a small `hello.sh` script and run it.
-6. Read a PBS script and identify the resource requests.
+- edit `hello.sh` and add another command
+- modify `if_example.sh` to check for a different file
+- change `while_example.sh` to count to 5
+- write a new `grep` command to find `FAILED` samples
+- modify the PBS job name in the `.pbs` file

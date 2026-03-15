@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -P your_project_code
+#PBS -q normal
+#PBS -l walltime=00:01:00
+#PBS -l ncpus=1
+#PBS -l mem=1GB
+#PBS -l jobfs=1GB
+#PBS -l wd
+#PBS -N hello_workshop
+
+bash scripts/hello.sh
